@@ -27,9 +27,17 @@ const GetOrCreateImage = async event => {
 
   if (!['403', '404'].includes(status)) return response
 
+  console.info("domainName\n" + domainName)
+
   let { nextExtension, height, sourceImage, width } = parse(querystring)
   const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
+
+  console.info("bucket\n" + bucket)
+
   const contentType = 'image/' + nextExtension
+
+  console.info("contentType\n" + contentType)
+
   const key = uri.replace(/^\//, '')
   const sourceKey = sourceImage.replace(/^\//, '')
 
@@ -46,7 +54,7 @@ const GetOrCreateImage = async event => {
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
-        resizedImage = Sharp(imageObj.Body)
+        resizedImage = Sharp(imageObj.Body, { animated: true })
           .resize(width, height)
           .toFormat(nextExtension, {
             /**
