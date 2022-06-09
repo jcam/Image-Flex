@@ -1,4 +1,4 @@
-name: deploy GetOrCreateImage code to lambda 
+name: deploy UriKeyToS3 code to lambda 
 on: [push, workflow_dispatch]
 jobs:
   deploy_source:
@@ -15,7 +15,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: npm install and build
         run: |
-          cd src/GetOrCreateImage 
+          cd src/UriToS3Key 
           npm ci
         env:
           CI: true
@@ -23,12 +23,12 @@ jobs:
         uses: montudor/action-zip@v1
       - name: Zip output
         run: zip -qq -r function.zip .
-        working-directory: src/GetOrCreateImage
+        working-directory: src/UriToS3Key
       - name: default deploy
         uses: appleboy/lambda-action@master
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: us-east-1
-          function_name: qp-GetOrCreateImageLambda
-          zip_file: src/GetOrCreateImage/function.zip
+          function_name: qp-UriToS3KeyLambda
+          zip_file: src/UriToS3Key/function.zip
