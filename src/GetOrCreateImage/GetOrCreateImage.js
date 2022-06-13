@@ -32,7 +32,8 @@ const GetOrCreateImage = async event => {
   console.info("domainName\n" + domainName)
 
   let { nextExtension, height, sourceImage, width } = parse(querystring)
-  const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
+  // const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
+  const [bucket] = domainName.match(/.+(?=\.s3\..*\.amazonaws\.com)/i)
 
   console.info("bucket\n" + bucket)
 
