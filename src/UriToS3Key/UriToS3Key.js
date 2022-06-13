@@ -7,6 +7,8 @@ const BAD_JPG_EXTENSION = 'jpg'
 const GOOD_JPG_EXTENSION = 'jpeg'
 
 const UriToS3Key = event => {
+  console.info("event\n" + event)
+
   const { request, request: { headers, querystring, uri } } = event.Records[0].cf
 
   console.info("headers\n" + headers)
@@ -17,15 +19,17 @@ const UriToS3Key = event => {
 
   if (!width || isNaN(parseInt(width, 10))) return request
 
-  const [,prefix, imageName, prevExtension] = uri.match(/(.*)\/(.*)\.(\w*)/)
+  // const [,prefix, imageName, prevExtension] = uri.match(/(.*)\/(.*)\.(\w*)/)
+  const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
   const acceptHeader = Array.isArray(headers.accept)
     ? headers.accept[0].value
     : ''
   const nextExtension = acceptHeader.indexOf(DEFAULT_EXTENSION) !== -1
     ? DEFAULT_EXTENSION
-    : prevExtension === BAD_JPG_EXTENSION
-      ? GOOD_JPG_EXTENSION
-      : prevExtension.toLowerCase()
+    : GOOD_JPG_EXTENSION
+    // : prevExtension === BAD_JPG_EXTENSION
+    //   ? GOOD_JPG_EXTENSION
+    //   : prevExtension.toLowerCase()
   const dimensions = height
     ? `${width}x${height}`
     : width
@@ -35,7 +39,7 @@ const UriToS3Key = event => {
   request.querystring = [
     `nextExtension=${nextExtension}`,
     `height=${height}`,
-    `sourceImage=${prefix}/${imageName}.${prevExtension}`,
+    `sourceImage=${prefix}/${imageName}`,
     `width=${width}`
   ].join('&')
 
