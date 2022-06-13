@@ -1,5 +1,10 @@
 name: deploy GetOrCreateImage code to lambda 
-on: [push, workflow_dispatch]
+on:
+  push:
+    paths:
+      - 'src/GetOrCreateImage/**'
+  workflow_dispatch
+
 jobs:
   deploy_source:
     name: build and deploy lambda

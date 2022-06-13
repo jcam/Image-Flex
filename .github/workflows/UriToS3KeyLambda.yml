@@ -1,5 +1,9 @@
-name: deploy UriKeyToS3 code to lambda 
-on: [push, workflow_dispatch]
+name: deploy UriToS3Key code to lambda 
+on:
+  push:
+    paths:
+      - 'src/UriToS3Key/**'
+  workflow_dispatch
 jobs:
   deploy_source:
     name: build and deploy lambda
