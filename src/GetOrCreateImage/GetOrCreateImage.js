@@ -7,6 +7,8 @@ const { parse } = require('querystring')
 const S3 = new AWS.S3()
 
 const GetOrCreateImage = async event => {
+  console.info("GetOrCreateImage handler")
+
   const {
     cf: {
       request: {
