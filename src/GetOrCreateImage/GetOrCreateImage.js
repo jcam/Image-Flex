@@ -27,6 +27,8 @@ const GetOrCreateImage = async event => {
     }
   } = event.Records[0]
 
+  console.info(JSON.stringify(response, null, 4))
+
   if (!['403', '404'].includes(status)) return response
 
   console.info("domainName\n" + domainName)
@@ -42,7 +44,9 @@ const GetOrCreateImage = async event => {
   console.info("contentType\n" + contentType)
 
   const key = uri.replace(/^\//, '')
+  console.info("key\n" + key)
   const sourceKey = sourceImage.replace(/^\//, '')
+  console.info("sourceKey\n" + sourceKey)
 
   height = parseInt(height, 10) || null
   width = parseInt(width, 10)

@@ -15,24 +15,21 @@ const UriToS3Key = event => {
   console.info("querystring\n" + querystring)
   console.info("uri\n" + uri)
 
-  const { h: height = '', w: width } = parse(querystring)
+  const { h: height, w: width, f: format = '' } = parse(querystring)
 
   if (!width || isNaN(parseInt(width, 10))) return request
+  if (!height || isNaN(parseInt(width, 10))) return request
 
   // const [,prefix, imageName, prevExtension] = uri.match(/(.*)\/(.*)\.(\w*)/)
   const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
   const acceptHeader = Array.isArray(headers.accept)
     ? headers.accept[0].value
     : ''
-  const nextExtension = acceptHeader.indexOf(DEFAULT_EXTENSION) !== -1
-    ? DEFAULT_EXTENSION
-    : GOOD_JPG_EXTENSION
+  const nextExtension = !format ? '' : format
     // : prevExtension === BAD_JPG_EXTENSION
     //   ? GOOD_JPG_EXTENSION
     //   : prevExtension.toLowerCase()
-  const dimensions = height
-    ? `${width}x${height}`
-    : width
+  const dimensions = `${width}x${height}`
   const key = `${prefix}/${dimensions}/${imageName}.${nextExtension}`
 
   request.uri = key
