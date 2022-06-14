@@ -39,7 +39,7 @@ const GetOrCreateImage = async event => {
 
   console.info("bucket\n" + bucket)
 
-  const contentType = 'image/' + nextExtension
+  let contentType = 'image/' + nextExtension
 
   console.info("contentType\n" + contentType)
 
@@ -58,6 +58,13 @@ const GetOrCreateImage = async event => {
     .then(imageObj => {
       let resizedImage
       const errorMessage = `Error while resizing "${sourceKey}" to "${key}":`
+
+      console.info(JSON.stringify(imageObj.Metadata, null, 4))
+
+      if (nextExtension == '') {
+        nextExtension = imageObj.Metadata["Content-Type"].replace(/^(image\/)/,'');
+        contentType = 'image/' + nextExtension
+      }
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
