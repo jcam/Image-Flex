@@ -76,7 +76,6 @@ const GetOrCreateImage = async event => {
         resizedImage = Sharp(imageObj.Body, { animated: true })
           .resize(width, height, {
             withoutEnlargement: true,
-            withoutReduction: true,
             fit: scaling,
           })
           .toFormat(nextExtension, {

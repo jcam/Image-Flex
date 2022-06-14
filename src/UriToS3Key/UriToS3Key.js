@@ -17,10 +17,14 @@ const UriToS3Key = event => {
   console.info("querystring\n" + querystring)
   console.info("uri\n" + uri)
 
-  const { h: height, w: width, f: format, s: scaling = DEFAULT_SCALING} = parse(querystring)
+  const { h: height, w: width, f: format, s: scaling} = parse(querystring)
 
   if (!width || isNaN(parseInt(width, 10))) return request
   if (!height || isNaN(parseInt(width, 10))) return request
+
+  if (!scaling) {
+    throw new Error(`Query Parameter s (scaling type) cannot be empty for resizing operation.`)
+  }
 
   const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
   const acceptHeader = Array.isArray(headers.accept)
