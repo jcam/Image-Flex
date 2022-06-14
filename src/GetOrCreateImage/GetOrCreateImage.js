@@ -62,8 +62,10 @@ const GetOrCreateImage = async event => {
       console.info(JSON.stringify(imageObj.Metadata, null, 4))
 
       if (nextExtension == '') {
-        nextExtension = imageObj.Metadata["Content-Type"].replace(/^(image\/)/,'');
+        nextExtension = imageObj.Metadata["content-type"].replace(/^(image\/)/,'');
+        console.info("nextExtension\n" + nextExtension)
         contentType = 'image/' + nextExtension
+        console.info("contentType\n" + contentType)
       }
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
