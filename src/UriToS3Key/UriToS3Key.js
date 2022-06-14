@@ -30,7 +30,7 @@ const UriToS3Key = event => {
     //   ? GOOD_JPG_EXTENSION
     //   : prevExtension.toLowerCase()
   const dimensions = `${width}x${height}`
-  const key = `${prefix}/${dimensions}/${imageName}.${nextExtension}`
+  const key = nextExtension == '' ? `${prefix}/${dimensions}/${imageName}` : `${prefix}/${dimensions}/${imageName}.${nextExtension}`
 
   request.uri = key
   request.querystring = [

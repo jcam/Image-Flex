@@ -32,6 +32,7 @@ const GetOrCreateImage = async event => {
   if (!['403', '404'].includes(status)) return response
 
   console.info("domainName\n" + domainName)
+  console.info("uri\n" + uri)
 
   let { nextExtension, height, sourceImage, width } = parse(querystring)
   // const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
@@ -66,6 +67,8 @@ const GetOrCreateImage = async event => {
         console.info("nextExtension\n" + nextExtension)
         contentType = 'image/' + nextExtension
         console.info("contentType\n" + contentType)
+        key = key + "." + nextExtension
+        console.info("key\n" + key)
       }
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
