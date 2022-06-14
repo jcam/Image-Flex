@@ -34,7 +34,7 @@ const GetOrCreateImage = async event => {
   console.info("domainName\n" + domainName)
   console.info("uri\n" + uri)
 
-  let { nextExtension, height, sourceImage, width } = parse(querystring)
+  let { width, height, sourceImage, nextExtension, scaling } = parse(querystring)
   // const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
   const [bucket] = domainName.match(/.+(?=\.s3\..*\.amazonaws\.com)/i)
 
@@ -49,10 +49,10 @@ const GetOrCreateImage = async event => {
   const sourceKey = sourceImage.replace(/^\//, '')
   console.info("sourceKey\n" + sourceKey)
 
-  height = parseInt(height, 10) || null
+  height = parseInt(height, 10)
   width = parseInt(width, 10)
 
-  if (!width) return response
+  if (!width || !height) return response
 
   return S3.getObject({ Bucket: bucket, Key: sourceKey })
     .promise()
@@ -74,7 +74,11 @@ const GetOrCreateImage = async event => {
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
         resizedImage = Sharp(imageObj.Body, { animated: true })
-          .resize(width, height)
+          .resize(width, height, {
+            withoutEnlargement: true,
+            withoutReduction: true,
+            fit: scaling,
+          })
           .toFormat(nextExtension, {
             /**
              * @see https://sharp.pixelplumbing.com/api-output#webp for a list of options.
