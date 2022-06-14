@@ -44,7 +44,7 @@ const GetOrCreateImage = async event => {
 
   console.info("contentType\n" + contentType)
 
-  const key = uri.replace(/^\//, '')
+  let key = uri.replace(/^\//, '')
   console.info("key\n" + key)
   const sourceKey = sourceImage.replace(/^\//, '')
   console.info("sourceKey\n" + sourceKey)
