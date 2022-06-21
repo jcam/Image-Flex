@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - 'src/GetOrCreateImage/**'
+    branches:
+    - 'master'
   workflow_dispatch:
 jobs:
   deploy_source:
