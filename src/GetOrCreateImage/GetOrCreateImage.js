@@ -71,9 +71,11 @@ const GetOrCreateImage = async event => {
         console.info("key\n" + key)
       }
 
+      let isAnimated = (imageObj.Metadata["content-type"] == "image/gif") ? true: false;
+
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
-        resizedImage = Sharp(imageObj.Body, { animated: true })
+        resizedImage = Sharp(imageObj.Body, { animated: isAnimated })
           .resize(width, height, {
             withoutEnlargement: true,
             fit: scaling,
