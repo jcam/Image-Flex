@@ -72,6 +72,7 @@ const GetOrCreateImage = async event => {
       }
 
       let isAnimated = (nextExtension == "image/gif") ? true: false;
+      console.info("isAnimated \n" + isAnimated)
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
