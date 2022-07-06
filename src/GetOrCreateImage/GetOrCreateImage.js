@@ -53,6 +53,8 @@ const GetOrCreateImage = async event => {
   width = parseInt(width, 10)
 
   if (!width || !height) return response
+  let isAnimated = false;
+  console.info("isAnimated before\n" + isAnimated);
 
   return S3.getObject({ Bucket: bucket, Key: sourceKey })
     .promise()
@@ -60,7 +62,7 @@ const GetOrCreateImage = async event => {
       let resizedImage
       const errorMessage = `Error while resizing "${sourceKey}" to "${key}":`
 
-      console.info(JSON.stringify(imageObj.Metadata, null, 4))
+      console.info("imageObj.Metadata \n" + JSON.stringify(imageObj.Metadata, null, 4))
 
       if (nextExtension == '') {
         nextExtension = imageObj.Metadata["content-type"].replace(/^(image\/)/,'');
@@ -69,10 +71,9 @@ const GetOrCreateImage = async event => {
         console.info("contentType\n" + contentType)
         key = key + "." + nextExtension
         console.info("key\n" + key)
+        if (contentType == "image/gif") {isAnimated = true;}
+        console.info("isAnimated after\n" + isAnimated);
       }
-
-      let isAnimated = (nextExtension == "image/gif") ? true : false;
-      console.info("isAnimated \n" + isAnimated)
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
