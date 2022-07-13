@@ -27,6 +27,9 @@ const UriToS3Key = event => {
   }
 
   const [prefix, imageName] = uri.match(/(.*)\/(.*)/)
+  console.info("prefix\n" + prefix)
+  console.info("imageName\n" + imageName)
+
   const acceptHeader = Array.isArray(headers.accept)
     ? headers.accept[0].value
     : ''
@@ -39,7 +42,7 @@ const UriToS3Key = event => {
   request.querystring = [
     `width=${width}`,
     `height=${height}`,
-    `sourceImage=${prefix}/${imageName}`,
+    `sourceImage=${uri}`,
     `nextExtension=${nextExtension}`,
     `scaling=${scaling}`,
   ].join('&')
