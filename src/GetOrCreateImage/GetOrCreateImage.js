@@ -65,7 +65,8 @@ const GetOrCreateImage = async event => {
       console.info("imageObj.Metadata\n" + JSON.stringify(imageObj.Metadata, null, 4))
 
       if (nextExtension == '') {
-        nextExtension = imageObj.Metadata["content-type"].replace(/^(image\/)/,'');
+        // nextExtension = imageObj.Metadata["content-type"].replace(/^(image\/)/,'');
+        nextExtension = imageObj.ContentType.replace(/^(image\/)/,'');
         console.info("nextExtension\n" + nextExtension)
         contentType = 'image/' + nextExtension
         console.info("contentType\n" + contentType)
