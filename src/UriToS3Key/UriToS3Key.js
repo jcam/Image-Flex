@@ -9,7 +9,7 @@ const GOOD_JPG_EXTENSION = 'jpeg'
 const DEFAULT_SCALING = 'outside'
 
 const UriToS3Key = event => {
-  console.info("event\n" + event)
+  console.info("event\n" + JSON.stringify(event))
 
   const { request, request: { headers, querystring, uri } } = event.Records[0].cf
 
@@ -49,7 +49,7 @@ const UriToS3Key = event => {
     `scaling=${scaling}`,
   ].join('&')
 
-  console.info("request\n" + request)
+  console.info("request\n" + JSON.stringify(request))
 
   return request
 }

@@ -48,19 +48,19 @@ const GetOrCreateImage = async event => {
 
   let key = uri.replace(/^\//, '')
   console.info("key\n" + key)
-  // const sourceKey = sourceImage.replace(/^\//, '')
-  // console.info("sourceKey\n" + sourceKey)
+  const sourceKey = sourceImage.replace(/^\//, '')
+  console.info("sourceKey\n" + sourceKey)
 
   height = parseInt(height, 10)
   width = parseInt(width, 10)
 
   if (!width || !height) return response
 
-  return S3.getObject({ Bucket: bucket, Key: sourceImage })
+  return S3.getObject({ Bucket: bucket, Key: sourceKey })
     .promise()
     .then(imageObj => {
       let resizedImage
-      const errorMessage = `Error while resizing "${sourceImage}" to "${key}":`
+      const errorMessage = `Error while resizing "${sourceKey}" to "${key}":`
 
       console.info("imageObj.Metadata\n" + JSON.stringify(imageObj.Metadata, null, 4))
 
@@ -91,9 +91,11 @@ const GetOrCreateImage = async event => {
           })
           .toBuffer()
           .catch(error => {
+            console.error(`${errorMessage} ${error}`)
             throw new Error(`${errorMessage} ${error}`)
           })
       } catch(error) {
+        console.error(`${errorMessage} ${error}`)
         throw new Error(`${errorMessage} ${error}`)
       }
       return resizedImage
@@ -108,6 +110,7 @@ const GetOrCreateImage = async event => {
       })
         .promise()
         .catch(error => {
+          console.error(`Error while putting resized image '${uri}' into bucket:${error}`)
           throw new Error(`Error while putting resized image '${uri}' into bucket: ${error}`)
         })
 
@@ -124,7 +127,8 @@ const GetOrCreateImage = async event => {
       }
     })
     .catch(error => {
-      const errorMessage = `Error while getting source image object "${sourceImage}": ${error}`
+      const errorMessage = `Error while getting source image object "${sourceKey}": ${error}`
+      console.error(errorMessage)
 
       return {
         ...response,
