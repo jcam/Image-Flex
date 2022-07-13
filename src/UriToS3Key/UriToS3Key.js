@@ -26,7 +26,7 @@ const UriToS3Key = event => {
     throw new Error(`Query Parameter s (scaling type) cannot be empty for resizing operation.`)
   }
 
-  const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
+  const [prefix, imageName] = uri.match(/(.*)\/(.*)/)
   const acceptHeader = Array.isArray(headers.accept)
     ? headers.accept[0].value
     : ''
@@ -43,6 +43,8 @@ const UriToS3Key = event => {
     `nextExtension=${nextExtension}`,
     `scaling=${scaling}`,
   ].join('&')
+
+  console.info("request.querystring\n" + request.querystring)
 
   return request
 }

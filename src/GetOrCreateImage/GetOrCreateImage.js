@@ -40,6 +40,8 @@ const GetOrCreateImage = async event => {
 
   console.info("bucket\n" + bucket)
 
+  console.info("sourceImage\n" + sourceImage)
+
   let contentType = 'image/' + nextExtension
 
   console.info("contentType\n" + contentType)
