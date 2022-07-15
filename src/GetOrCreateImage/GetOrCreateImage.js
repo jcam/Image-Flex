@@ -40,6 +40,8 @@ const GetOrCreateImage = async event => {
 
   console.info("bucket\n" + bucket)
 
+  console.info("sourceImage\n" + sourceImage)
+
   let contentType = 'image/' + nextExtension
 
   console.info("contentType\n" + contentType)
@@ -60,10 +62,11 @@ const GetOrCreateImage = async event => {
       let resizedImage
       const errorMessage = `Error while resizing "${sourceKey}" to "${key}":`
 
-      console.info(JSON.stringify(imageObj.Metadata, null, 4))
+      console.info("imageObj.Metadata\n" + JSON.stringify(imageObj.Metadata, null, 4))
 
       if (nextExtension == '') {
-        nextExtension = imageObj.Metadata["content-type"].replace(/^(image\/)/,'');
+        // nextExtension = imageObj.Metadata["content-type"].replace(/^(image\/)/,'');
+        nextExtension = imageObj.ContentType.replace(/^(image\/)/,'');
         console.info("nextExtension\n" + nextExtension)
         contentType = 'image/' + nextExtension
         console.info("contentType\n" + contentType)
@@ -71,9 +74,12 @@ const GetOrCreateImage = async event => {
         console.info("key\n" + key)
       }
 
+      let isAnimated = (nextExtension == "gif") ? true : false;
+      console.info("isAnimated \n" + isAnimated)
+
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
-        resizedImage = Sharp(imageObj.Body, { animated: true })
+        resizedImage = Sharp(imageObj.Body, { animated: isAnimated })
           .resize(width, height, {
             withoutEnlargement: true,
             fit: scaling,
@@ -86,9 +92,11 @@ const GetOrCreateImage = async event => {
           })
           .toBuffer()
           .catch(error => {
+            console.error(`${errorMessage} ${error}`)
             throw new Error(`${errorMessage} ${error}`)
           })
       } catch(error) {
+        console.error(`${errorMessage} ${error}`)
         throw new Error(`${errorMessage} ${error}`)
       }
       return resizedImage
@@ -103,6 +111,7 @@ const GetOrCreateImage = async event => {
       })
         .promise()
         .catch(error => {
+          console.error(`Error while putting resized image '${uri}' into bucket:${error}`)
           throw new Error(`Error while putting resized image '${uri}' into bucket: ${error}`)
         })
 
@@ -120,6 +129,7 @@ const GetOrCreateImage = async event => {
     })
     .catch(error => {
       const errorMessage = `Error while getting source image object "${sourceKey}": ${error}`
+      console.error(errorMessage)
 
       return {
         ...response,

@@ -9,7 +9,7 @@ const GOOD_JPG_EXTENSION = 'jpeg'
 const DEFAULT_SCALING = 'outside'
 
 const UriToS3Key = event => {
-  console.info("event\n" + event)
+  console.info("event\n" + JSON.stringify(event))
 
   const { request, request: { headers, querystring, uri } } = event.Records[0].cf
 
@@ -27,6 +27,9 @@ const UriToS3Key = event => {
   }
 
   const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
+  console.info("prefix\n" + prefix)
+  console.info("imageName\n" + imageName)
+
   const acceptHeader = Array.isArray(headers.accept)
     ? headers.accept[0].value
     : ''
@@ -35,14 +38,18 @@ const UriToS3Key = event => {
   const dimensions = `${width}x${height}`
   const key = nextExtension == '' ? `${prefix}/${dimensions}/${scaling}/${imageName}` : `${prefix}/${dimensions}/${scaling}/${imageName}.${nextExtension}`
 
+  console.info("key\n" + key)
+
   request.uri = key
   request.querystring = [
     `width=${width}`,
     `height=${height}`,
-    `sourceImage=${prefix}/${imageName}`,
+    `sourceImage=${uri}`,
     `nextExtension=${nextExtension}`,
     `scaling=${scaling}`,
   ].join('&')
+
+  console.info("request\n" + JSON.stringify(request))
 
   return request
 }
