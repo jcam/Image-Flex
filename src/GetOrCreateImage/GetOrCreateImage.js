@@ -95,6 +95,7 @@ const GetOrCreateImage = async event => {
           })
       } catch(error) {
         console.error(`${errorMessage} ${error}`)
+        console.error('Image resizing failed, returning original')
         return imageObj.Body
       }
       return resizedImage
