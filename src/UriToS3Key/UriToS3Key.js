@@ -3,6 +3,7 @@
 const { parse } = require('querystring')
 
 const DEFAULT_EXTENSION = 'webp'
+const ALTERNATE_EXTENSION = 'avif'
 const BAD_JPG_EXTENSION = 'jpg'
 const GOOD_JPG_EXTENSION = 'jpeg'
 
@@ -16,11 +17,13 @@ const UriToS3Key = event => {
   const acceptHeader = Array.isArray(headers.accept)
     ? headers.accept[0].value
     : ''
-  const nextExtension = acceptHeader.indexOf(DEFAULT_EXTENSION) !== -1
-    ? DEFAULT_EXTENSION
-    : prevExtension === BAD_JPG_EXTENSION
-      ? GOOD_JPG_EXTENSION
-      : prevExtension.toLowerCase()
+  const nextExtension = acceptHeader.indexOf(ALTERNATE_EXTENSION) !== -1 && width > 10
+    ? ALTERNATE_EXTENSION
+    : acceptHeader.indexOf(DEFAULT_EXTENSION) !== -1
+      ? DEFAULT_EXTENSION
+      : prevExtension === BAD_JPG_EXTENSION
+        ? GOOD_JPG_EXTENSION
+        : prevExtension.toLowerCase()
   const dimensions = height
     ? `${width}x${height}`
     : width
