@@ -69,13 +69,14 @@ Now suppose that you want to load that image at 400 pixels width, maintaining th
 ```
 https://[Distro ID].cloudfront.net/myimage.png?w=400
 ```
-This will return a resized and optimized image (WebP, if supported by the browser).
+This will return a resized and optimized image (AVIF or WebP, if supported by the browser).
 
 **h parameter**
 
-You can also add an `h` query string parameter to set the height. Note that changing the aspect ratio will clip the image (like `object-fit: cover` in CSS), not stretch or squash the image.
+You can also add an `h` query string parameter to set the height. Note that it will maintain the aspect ratio. If an h is passed that doesn't match the old aspect ratio, it will exceed the requested size in one dimension or the other, not stretch or squash the image:
+"Preserving aspect ratio, resize the image to be as small as possible while ensuring its dimensions are greater than or equal to both those specified."
 
-<sub>400x400 pixels, clipped</sub>
+<sub>400x400 pixels, or slightly larger (leaving the designer to crop/stretch/letterbox/etc with CSS)</sub>
 ```
 https://[Distro ID].cloudfront.net/myimage.png?w=400&h=400
 ```

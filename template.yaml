@@ -21,7 +21,7 @@ Resources:
         - arn:aws:iam::aws:policy/AWSXrayFullAccess
       Policies:
         -
-          PolicyName: !Sub ${AWS::StackName}-images-Lambda-S3
+          PolicyName: resizer-images-Lambda-S3
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -29,19 +29,19 @@ Resources:
               Action:
                 - s3:*
               Resource:
-                - !Sub arn:aws:s3:::${AWS::StackName}-images
-                - !Sub arn:aws:s3:::${AWS::StackName}-images/*
+                - arn:aws:s3:::resizer-images
+                - arn:aws:s3:::resizer-images/*
 
   OriginAccessId:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
       CloudFrontOriginAccessIdentityConfig:
-        Comment: !Sub ${AWS::StackName}-OriginAccessId
+        Comment: resizer-OriginAccessId
 
   ImageBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-images
+      BucketName: resizer-images
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -61,21 +61,21 @@ Resources:
     Properties:
       Bucket: !Ref ImageBucket
       PolicyDocument:
-        Id:  !Sub ${AWS::StackName}-images-policy
+        Id:  resizer-images-policy
         Version: 2012-10-17
         Statement:
           -
             Action:
               - s3:GetObject
             Effect: Allow
-            Resource: !Sub arn:aws:s3:::${AWS::StackName}-images/*
+            Resource: arn:aws:s3:::resizer-images/*
             Principal:
               AWS: !Sub arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessId}
 
   CloudFrontLoggingBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-cflogs
+      BucketName: resizer-cflogs
       PublicAccessBlockConfiguration:
         BlockPublicAcls: Yes
         BlockPublicPolicy: Yes
@@ -85,7 +85,7 @@ Resources:
   UriToS3KeyFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-UriToS3Key
+      FunctionName: resizer-UriToS3Key
       AutoPublishAlias: live
       CodeUri: src/UriToS3Key/
       Handler: index.handler
@@ -97,7 +97,7 @@ Resources:
   GetOrCreateImageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-GetOrCreateImage
+      FunctionName: resizer-GetOrCreateImage
       AutoPublishAlias: live
       CodeUri: src/GetOrCreateImage/
       Handler: index.handler
@@ -111,7 +111,7 @@ Resources:
     Properties:
       DefaultAction:
         Allow: {}
-      Name: !Sub ${AWS::StackName}-WebAcl
+      Name: resizer-WebAcl
       Rules:
         - Name: AWS-AWSManagedRulesCommonRuleSet
           Priority: 0
@@ -120,7 +120,7 @@ Resources:
           VisibilityConfig:
             SampledRequestsEnabled: true
             CloudWatchMetricsEnabled: true
-            MetricName: !Sub ${AWS::StackName}-MetricForAMRCRS
+            MetricName: resizer-MetricForAMRCRS
           Statement:
             ManagedRuleGroupStatement:
               VendorName: AWS
@@ -131,7 +131,7 @@ Resources:
       VisibilityConfig:
         SampledRequestsEnabled: true
         CloudWatchMetricsEnabled: true
-        MetricName: !Sub ${AWS::StackName}-WebAcl
+        MetricName: resizer-WebAcl
 
   Distribution:
     Type: AWS::CloudFront::Distribution
@@ -148,7 +148,7 @@ Resources:
           # AcmCertificateArn: YOUR CERTIFICATE MANAGER ARN HERE
           # SslSupportMethod: sni-only
 
-        Comment: !Sub Distribution for ${AWS::StackName}
+        Comment: Distribution for resizer
         DefaultCacheBehavior:
           Compress: true
           ForwardedValues:
@@ -164,19 +164,19 @@ Resources:
               - Origin
           LambdaFunctionAssociations:
             - EventType: viewer-request
-              LambdaFunctionARN: !Ref UriToS3KeyFunction.Version
+              LambdaFunctionARN: UriToS3KeyFunction.Version
             - EventType: origin-response
-              LambdaFunctionARN: !Ref GetOrCreateImageFunction.Version
+              LambdaFunctionARN: GetOrCreateImageFunction.Version
           MinTTL: 100
-          TargetOriginId: !Sub ${AWS::StackName}-images
+          TargetOriginId: resizer-images
           ViewerProtocolPolicy: allow-all
         Enabled: true
         Logging:
           Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
 
         Origins:
-          - DomainName: !Sub ${AWS::StackName}-images.s3.amazonaws.com
-            Id: !Sub ${AWS::StackName}-images
+          - DomainName: resizer-images.s3.amazonaws.com
+            Id: resizer-images
             S3OriginConfig:
               OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${OriginAccessId}
         PriceClass: PriceClass_All
