@@ -27,7 +27,7 @@ const GetOrCreateImage = async event => {
 
   if (!['403', '404'].includes(status)) return response
 
-  let { nextExtension, height, sourceImage, width } = parse(querystring)
+  let { nextExtension, height, sourceImage, width, quality, withoutEnlargement, fit } = parse(querystring)
   const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
   const contentType = 'image/' + nextExtension
   const key = uri.replace(/^\//, '')
@@ -50,14 +50,14 @@ const GetOrCreateImage = async event => {
           animated: true
         })
           .resize(width, height, {
-            withoutEnlargement: true,
-            fit: 'outside'
+            withoutEnlargement: withoutEnlargement !== 'false' ? true : false,
+            fit: fit
           })
           .toFormat(nextExtension, {
             /**
              * @see https://sharp.pixelplumbing.com/api-output#webp for a list of options.
              */
-            quality: 95
+            quality: quality
           })
           .toBuffer()
           .catch(error => {

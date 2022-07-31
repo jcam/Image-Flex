@@ -55,7 +55,7 @@
                       ]
                   },
                   "method": "GET",
-                  "querystring": "w=10",
+                  "querystring": "width=10",
                   "uri": "/ghosted.jpg"
               }
           }

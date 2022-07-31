@@ -48,7 +48,7 @@ $ npm run update -- staging
 
 ## Usage
 
-Using an Image Flex implementation is easy. Once the infrastructure has spun up, simply upload your raw, unoptimized images to the S3 bucket root. You can then access those files directly, or pass a `w` (width) query string parameter to fetch a resized and optimized copy, which also gets stored in the S3 bucket and cached in CloudFront.
+Using an Image Flex implementation is easy. Once the infrastructure has spun up, simply upload your raw, unoptimized images to the S3 bucket root. You can then access those files directly, or pass a `width` query string parameter to fetch a resized and optimized copy, which also gets stored in the S3 bucket and cached in CloudFront.
 
 ***Example:***
 
@@ -61,25 +61,30 @@ https://[Distro ID].cloudfront.net/myimage.png
 Using this full-resolution, unoptimized image would have negative performance impacts.
 
 #### Resizing your images
-**w parameter**
+**width parameter**
 
-Now suppose that you want to load that image at 400 pixels width, maintaining the aspect ratio. It's as easy as adding the `?w=400` query string parameter.
+Now suppose that you want to load that image at 400 pixels width, maintaining the aspect ratio. It's as easy as adding the `?width=400` query string parameter.
 
 <sub>400x225 pixels</sub>
 ```
-https://[Distro ID].cloudfront.net/myimage.png?w=400
+https://[Distro ID].cloudfront.net/myimage.png?width=400
 ```
 This will return a resized and optimized image (AVIF or WebP, if supported by the browser).
 
-**h parameter**
+**height parameter**
 
-You can also add an `h` query string parameter to set the height. Note that it will maintain the aspect ratio. If an h is passed that doesn't match the old aspect ratio, it will exceed the requested size in one dimension or the other, not stretch or squash the image:
+You can also add an `height` query string parameter to set the height. Note that it will maintain the aspect ratio. If a height is passed that doesn't match the old aspect ratio, it will exceed the requested size in one dimension or the other, not stretch or squash the image:
 "Preserving aspect ratio, resize the image to be as small as possible while ensuring its dimensions are greater than or equal to both those specified."
 
 <sub>400x400 pixels, or slightly larger (leaving the designer to crop/stretch/letterbox/etc with CSS)</sub>
 ```
-https://[Distro ID].cloudfront.net/myimage.png?w=400&h=400
+https://[Distro ID].cloudfront.net/myimage.png?width=400&height=400
 ```
+
+**additional parameters**
+
+Parameters are set to match those used by directus, see the directus documentation here: [Directus Assets](https://docs.directus.io/reference/files/#custom-transformations)
+This implementation defaults to fit=outside, quality=95, withoutEnlargement=true, and the format is dynamic based on which formats the browser says it supports
 
 ## How It Works
 
@@ -96,7 +101,7 @@ The fully actioned (built, packaged, and deployed) [SAM template](/template.yaml
 | [Logging S3 Bucket](https://aws.amazon.com/s3) | `[Stack Name]`-cflogs | Stores the compressed CloudFront logs. |
 | [Hosting S3 Bucket](https://aws.amazon.com/s3) | `[Stack Name]`-images | Serves as the CloudFront origin, storing the original image assets in the root, and resized image assets within subdirectories by width. |
 | [Origin Access Identity](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html) | N/A | Restricts direct access to the S3 bucket content, only allowing the CloudFront distribution to read and serve the image files.  |
-| [Viewer Request Lambda@Edge](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html) | `[Stack Name]`-UriToS3Key | Responds to the "viewer request" CloudFront trigger, and will reformat the requested URI into a valid S3 key expected by the S3 bucket. Example: **/image.png?w=300** `=>` **/300/image.webp** |
+| [Viewer Request Lambda@Edge](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html) | `[Stack Name]`-UriToS3Key | Responds to the "viewer request" CloudFront trigger, and will reformat the requested URI into a valid S3 key expected by the S3 bucket. Example: **/image.png?width=300** `=>` **/300/image.webp** |
 | [Origin Response Lambda@Edge](https://docs.aws.amazon.com/lambda/latest/dg/lambda-edge.html) | `[Stack Name]`-GetOrCreateImage | Responds to the "origin response" CloudFront trigger, and: <ol><li>If the requested image in the requested size is found, return it.</li><li>Otherwise, if the requested image in the requested size is not found, attempt to create an image in the requested size from the base image.</li><li>Otherwise, if the base image is not found, return *HTTP status 404: Not Found*.</li></ol> |
 
 ## Building and Deploying
