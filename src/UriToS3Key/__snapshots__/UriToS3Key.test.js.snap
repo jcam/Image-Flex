@@ -101,8 +101,8 @@ Object {
     ],
   },
   "method": "GET",
-  "querystring": "nextExtension=avif&height=&sourceImage=/ghosted.jpg&width=300&quality=95&withoutEnlargement=true&fit=outside",
-  "uri": "/300/ghosted.avif",
+  "querystring": "nextExtension=webp&height=&sourceImage=/ghosted.jpg&width=300&quality=95&withoutEnlargement=true&fit=outside",
+  "uri": "/300/ghosted.webp",
 }
 `;
 

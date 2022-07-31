@@ -69,7 +69,7 @@ Now suppose that you want to load that image at 400 pixels width, maintaining th
 ```
 https://[Distro ID].cloudfront.net/myimage.png?width=400
 ```
-This will return a resized and optimized image (AVIF or WebP, if supported by the browser).
+This will return a resized and optimized image (WebP if supported by the browser).
 
 **height parameter**
 
