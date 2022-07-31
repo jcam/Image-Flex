@@ -3,6 +3,7 @@ const mockEvent = require('viewer-request-event')
 const mockEventAvif = require('viewer-request-event-avif')
 const mockEventSmall = require('viewer-request-event-small')
 const mockEventMods = require('viewer-request-event-lowquality-enlarge')
+const mockEventNoWidth = require('viewer-request-event-nowidth')
 
 describe('UriToS3Key', () => {
   it('should match snapshot', async () => {
@@ -28,6 +29,13 @@ describe('UriToS3Key', () => {
 describe('UriToS3Key', () => {
   it('should match snapshot', async () => {
     const response = await UriToS3Key(mockEventMods)
+    expect(response).toMatchSnapshot()
+  })
+})
+
+describe('UriToS3Key', () => {
+  it('should match snapshot', async () => {
+    const response = await UriToS3Key(mockEventNoWidth)
     expect(response).toMatchSnapshot()
   })
 })

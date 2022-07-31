@@ -34,9 +34,10 @@ const GetOrCreateImage = async event => {
   const sourceKey = sourceImage.replace(/^\//, '')
 
   height = parseInt(height, 10) || null
-  width = parseInt(width, 10)
+  width = parseInt(width, 10) || null
+  quality = parseInt(quality, 10) || 95
 
-  if (!width) return response
+  //if (!width) return response
 
   return S3.getObject({ Bucket: bucket, Key: sourceKey })
     .promise()
@@ -46,23 +47,41 @@ const GetOrCreateImage = async event => {
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
-        resizedImage = Sharp(imageObj.Body, {
-          animated: true
-        })
-          .resize(width, height, {
-            withoutEnlargement: withoutEnlargement !== 'false' ? true : false,
-            fit: fit
+        if (!width && !height) {
+          resizedImage = Sharp(imageObj.Body, {
+            animated: true
           })
-          .toFormat(nextExtension, {
-            /**
-             * @see https://sharp.pixelplumbing.com/api-output#webp for a list of options.
-             */
-            quality: quality
+            .toFormat(nextExtension, {
+              /**
+               * @see https://sharp.pixelplumbing.com/api-output#webp for a list of options.
+               */
+              quality: quality
+            })
+            .withMetadata()
+            .toBuffer()
+            .catch(error => {
+              throw new Error(`${errorMessage} ${error}`)
+            })
+        } else {
+          resizedImage = Sharp(imageObj.Body, {
+            animated: true
           })
-          .toBuffer()
-          .catch(error => {
-            throw new Error(`${errorMessage} ${error}`)
-          })
+            .resize(width, height, {
+              withoutEnlargement: withoutEnlargement !== 'false' ? true : false,
+              fit: fit
+            })
+            .toFormat(nextExtension, {
+              /**
+               * @see https://sharp.pixelplumbing.com/api-output#webp for a list of options.
+               */
+              quality: quality
+            })
+            .withMetadata()
+            .toBuffer()
+            .catch(error => {
+              throw new Error(`${errorMessage} ${error}`)
+            })
+        }
       } catch(error) {
         console.error(`${errorMessage} ${error}`)
         console.error('Image resizing failed, returning original')
