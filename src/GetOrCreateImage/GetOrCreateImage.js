@@ -12,7 +12,8 @@ const GetOrCreateImage = async event => {
       request: {
         origin: {
           s3: {
-            domainName
+            domainName,
+            path
           }
         },
         querystring,
@@ -30,8 +31,12 @@ const GetOrCreateImage = async event => {
   let { nextExtension, height, sourceImage, width, quality, withoutEnlargement, fit } = parse(querystring)
   const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
   const contentType = 'image/' + nextExtension
-  const key = uri.replace(/^\//, '')
-  const sourceKey = sourceImage.replace(/^\//, '')
+  const key = path
+    ? path.replace(/^\//, '') + '/' + uri.replace(/^\//, '')
+    : uri.replace(/^\//, '')
+  const sourceKey = path
+    ? path.replace(/^\//, '') + '/' + sourceImage.replace(/^\//, '')
+    : sourceImage.replace(/^\//, '')
 
   height = parseInt(height, 10) || null
   width = parseInt(width, 10) || null

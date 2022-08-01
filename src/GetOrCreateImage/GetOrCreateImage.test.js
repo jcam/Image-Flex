@@ -2,6 +2,7 @@ const GetOrCreateImage = require('./GetOrCreateImage')
 const mock200Event = require('origin-response-event-http200')
 const mock403Event = require('origin-response-event-http403')
 const mock404Event = require('origin-response-event-http404')
+const mock404PathEvent = require('origin-response-event-http404-withpath')
 const mockBadKeyEvent = require('origin-response-event-bad-key')
 
 describe('GetOrCreateImage', () => {
@@ -22,6 +23,13 @@ describe('GetOrCreateImage', () => {
   describe('when the resized image does not exist (404), but the source image does exist', ()=> {
     it('should match snapshot', async () => {
       const response = await GetOrCreateImage(mock404Event)
+      expect(response).toMatchSnapshot()
+    })
+  })
+
+  describe('when the resized image does not exist (404), but the source image does exist and there is a path', ()=> {
+    it('should match snapshot', async () => {
+      const response = await GetOrCreateImage(mock404PathEvent)
       expect(response).toMatchSnapshot()
     })
   })

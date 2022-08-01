@@ -1,5 +1,6 @@
 const mockImage = 'image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAQAAACRI2S5AAAAEElEQVR42mNkIAAYRxWAAQAG9gAKqv6+AwAAAABJRU5ErkJggg=='
 const validObjectKey = 'good-image.jpg'
+const validObjectKeyPath = 'media/uploads/good-image.jpg'
 
 exports.config = {}
 
@@ -9,7 +10,7 @@ exports.S3 = function () {
 
       return {
         promise: async () => {
-          if (params.Key !== validObjectKey) throw new Error()
+          if (params.Key !== validObjectKey && params.Key !== validObjectKeyPath) throw new Error()
 
           return {
             Body: mockImage
